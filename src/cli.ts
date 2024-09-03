@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { writeFileSync } from "fs";
-import { trpcRouterToSwiftClient } from "./index.js";
-import { TRPCSwiftFlags } from "./types.js";
+import { trpcRouterToSwiftClient } from "./index.ts";
+import { TRPCSwiftFlags } from "./types.ts";
 import path from "path";
 import os from "os";
 

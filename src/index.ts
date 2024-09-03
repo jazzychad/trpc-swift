@@ -1,12 +1,12 @@
 import { readFileSync, writeFileSync } from "fs";
 import { getTRPCStructure, trpcStructureToSwiftClass } from "./generators/router.js";
-import { indentSwiftCode, processTypeName } from "./utility.js";
-import { SwiftModelGenerationData, SwiftTRPCRouterDef, TRPCSwiftFlags } from "./types.js";
+import { indentSwiftCode, processTypeName } from "./utility.ts";
+import { SwiftModelGenerationData, SwiftTRPCRouterDef, TRPCSwiftFlags } from "./types.ts";
 import path from "path";
 import { fileURLToPath } from "url";
 
-export { TRPCSwiftMeta } from "./extensions/trpc.js";
-export { extendZodWithSwift } from "./extensions/zod.js";
+// export { TRPCSwiftMeta } from "./extensions/trpc.ts";
+export { extendZodWithSwift } from "./extensions/zod.ts";
 
 export const trpcRouterToSwiftClient = (name: string, routerDef: SwiftTRPCRouterDef, flags: TRPCSwiftFlags): string => {
     const __filename = fileURLToPath(import.meta.url);

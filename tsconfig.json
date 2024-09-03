@@ -9,7 +9,9 @@
         "strict": true,
         "sourceMap": true,
         "incremental": true,
-        "declaration": true
+        "declaration": true,
+	"noEmit": true,
+	"allowImportingTsExtensions": true
     },
     "include": ["src/**/*.ts"]
 }

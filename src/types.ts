@@ -1,6 +1,6 @@
 import { AnyRootConfig, Procedure, ProcedureParams, ProcedureRouterRecord, RootConfig } from "@trpc/server";
-import { RouterDef } from "../node_modules/@trpc/server/src/core/router.js";
-import { TRPCSwiftMeta } from "./extensions/trpc.js";
+import { RouterDef } from "../node_modules/@trpc/server/src/core/router.ts";
+import { TRPCSwiftMeta } from "./extensions/trpc.ts";
 
 export type TRPCSwiftGlobalMode = "all" | "top" | "none";
 
