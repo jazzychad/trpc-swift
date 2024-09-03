@@ -24,7 +24,7 @@ export const trpcRouterToSwiftClient = (name: string, routerDef: SwiftTRPCRouter
         flags,
     });
 
-    let swiftClient = readFileSync(path.join(__dirname, "templates/TRPCClient.swift")).toString("utf-8");
+    let swiftClient = readFileSync(path.join(__dirname, "../templates/TRPCClient.swift")).toString("utf-8");
     swiftClient += swiftClass;
 
     if (flags.createTypeAliases) {
