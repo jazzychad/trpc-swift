@@ -12,7 +12,7 @@ public enum DecodableValue: Decodable {
     case double(Double)
     case bool(Bool)
     case dictionary([String: DecodableValue])
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let str = try? container.decode(String.self) {
@@ -38,7 +38,7 @@ public enum TRPCErrorCode: Int, Codable {
     case unauthorized = -32001
     case forbidden = -32003
     case notFound = -32004
-    case methodNotSupported = -32005    
+    case methodNotSupported = -32005
     case timeout = -32008
     case conflict = -32009
     case preconditionFailed = -32012
@@ -46,7 +46,7 @@ public enum TRPCErrorCode: Int, Codable {
     case unprocessableContent = -32022
     case tooManyRequests = -32029
     case clientClosedRequest = -32099
-    
+
     // Application Defined
     case unknown = -1
     case missingOutputPayload = -2
@@ -58,7 +58,7 @@ public struct TRPCError: Error, Decodable {
     public let code: TRPCErrorCode
     public let message: String?
     public let data: DecodableValue?
-    
+
     init(code: TRPCErrorCode, message: String? = nil, data: DecodableValue? = nil) {
         self.code = code
         self.message = message
@@ -66,75 +66,105 @@ public struct TRPCError: Error, Decodable {
     }
 }
 
+//struct TRPCRequest<T: Encodable>: Encodable {
+//    struct DataContainer: Encodable {
+//        let json: T?
+//    }
+//
+//    let zero: DataContainer
+//
+//    enum CodingKeys: String, CodingKey {
+//        case zero = "0"
+//    }
+//}
+
 struct TRPCRequest<T: Encodable>: Encodable {
-    struct DataContainer: Encodable {
-        let json: T?
-    }
-    
-    let zero: DataContainer
-    
+//    struct DataContainer: Encodable {
+//        let json: T?
+//    }
+
+    let zero: T?
+
     enum CodingKeys: String, CodingKey {
         case zero = "0"
     }
 }
 
+// struct TRPCResponse<T: Decodable>: Decodable {
+//     struct Result: Decodable {
+//         struct DataContainer: Decodable {
+//             let json: T
+//         }
+
+//         let data: DataContainer
+//     }
+
+//     struct ErrorContainer: Decodable {
+//         let json: TRPCError
+//     }
+
+//     let result: Result?
+//     let error: ErrorContainer?
+// }
+
 struct TRPCResponse<T: Decodable>: Decodable {
     struct Result: Decodable {
-        struct DataContainer: Decodable {
-            let json: T
-        }
-        
-        let data: DataContainer
+        // struct DataContainer: Decodable {
+        //     let json: T
+        // }
+
+        let data: T
     }
-    
-    struct ErrorContainer: Decodable {
-        let json: TRPCError
-    }
-    
+
+    // struct ErrorContainer: Decodable {
+    //     let json: TRPCError
+    // }
+
     let result: Result?
-    let error: ErrorContainer?
+    let error: TRPCError? //ErrorContainer?
 }
 
 public typealias TRPCMiddleware = (URLRequest) async throws -> URLRequest
 
 class TRPCClient {
     struct EmptyObject: Codable {}
-    
+
     static let shared = TRPCClient()
-    
+
     lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        
+
         return formatter
     }()
-    
+
     func sendQuery<Request: Encodable, Response: Decodable>(url: URL, middlewares: [TRPCMiddleware], input: Request) async throws -> Response {
         guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
             throw TRPCError(code: .errorParsingUrl, message: "Could not create URLComponents from the given url: \(url)")
         }
-        
+
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
-        let data = try encoder.encode(TRPCRequest(zero: .init(json: Request.self == EmptyObject.self ? nil : input)))
-        
+        //let data = try encoder.encode(TRPCRequest(zero: .init(json: Request.self == EmptyObject.self ? nil : input)))
+        let data = try encoder.encode(TRPCRequest(zero: Request.self == EmptyObject.self ? nil : input))
+
         components.queryItems = [
             URLQueryItem(name: "batch", value: "1"),
             URLQueryItem(name: "input", value: String(data: data, encoding: .utf8)!)
         ]
-        
+
         let characterSet = CharacterSet(charactersIn: "/+").inverted
         guard let oldPercentEncodedQuery = components.percentEncodedQuery else {
             throw TRPCError(code: .errorParsingUrlComponents, message: "Could not retreive percent encoded URL query.")
         }
         components.percentEncodedQuery = oldPercentEncodedQuery.addingPercentEncoding(withAllowedCharacters: characterSet)
-        
+
         guard let url = components.url else {
             throw TRPCError(code: .errorParsingUrlComponents, message: "Could not generate final URL after including parameters.")
         }
-        
+
         return try await send(url: url, httpMethod: "GET", middlewares: middlewares, bodyData: nil)
     }
 
@@ -143,7 +173,8 @@ class TRPCClient {
 
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
-        let data = try encoder.encode(TRPCRequest(zero: .init(json: Request.self == EmptyObject.self ? nil : input)))
+        //let data = try encoder.encode(TRPCRequest(zero: .init(json: Request.self == EmptyObject.self ? nil : input)))
+        let data = try encoder.encode(TRPCRequest(zero: Request.self == EmptyObject.self ? nil : input))
 
         components?.queryItems = [
             URLQueryItem(name: "batch", value: "1")
@@ -176,11 +207,11 @@ class TRPCClient {
         let decoded = try decoder.decode([TRPCResponse<Response>].self, from: response.0)[0]
 
         if let error = decoded.error {
-            throw error.json
+            throw error //.json
         }
 
         if let result = decoded.result {
-            return result.data.json
+            return result.data //result.data.json
         }
 
         if Response.self == EmptyObject.self {

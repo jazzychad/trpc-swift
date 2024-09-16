@@ -11,6 +11,7 @@ export type TRPCSwiftFlags = {
     conformance: string;
     globalMode: "all" | "top" | "none";
     quiet: boolean;
+    methodPrefix: string | undefined;
 };
 
 export type TRPCStructure = {

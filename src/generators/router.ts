@@ -188,13 +188,13 @@ const trpcProcedureToSwiftMethodAndLocalModels = (name: string, procedure: Gener
         if (procedure._def.query) {
             swiftMethod += `${
                 hasOutput ? "return" : "let _: TRPCClient.EmptyObject ="
-            } try await TRPCClient.shared.sendQuery(url: url.${pathMethod}("${name}"), middlewares: middlewares, input: ${
+            } try await TRPCClient.shared.sendQuery(url: url.${pathMethod}("${state.flags.methodPrefix ? state.flags.methodPrefix + "." : ""}${name}"), middlewares: middlewares, input: ${
                 addedInput ? "input" : "TRPCClient.EmptyObject()"
             })\n`;
         } else if (procedure._def.mutation) {
             swiftMethod += `${
                 hasOutput ? "return" : "let _: TRPCClient.EmptyObject ="
-            } try await TRPCClient.shared.sendMutation(url: url.${pathMethod}("${name}"), middlewares: middlewares, input: ${
+            } try await TRPCClient.shared.sendMutation(url: url.${pathMethod}("${state.flags.methodPrefix ? state.flags.methodPrefix + "." : ""}${name}"), middlewares: middlewares, input: ${
                 addedInput ? "input" : "TRPCClient.EmptyObject()"
             })\n`;
         } else {

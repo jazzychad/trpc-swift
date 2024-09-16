@@ -24,6 +24,7 @@ const showHelp = () => {
     console.log("  -p, --public       Assign the public access modifier for all generated Swift models and routes.");
     console.log("  -a, --alias        Create public type aliases for all models in the global scope.");
     console.log("  -s, --shared       Create a shared singleton instance of the generated Swift client.");
+    console.log("  -m, --methodPrefix Set a method prefix for the generated trpc method names.");
     console.log("  -h, --help         Display this help message");
     console.log("  -q, --quiet        Run in quiet mode (no output except for fatal errors)");
 };
@@ -40,6 +41,7 @@ const flags: TRPCSwiftFlags = {
     globalMode: "top",
     conformance: "Equatable",
     quiet: false,
+    methodPrefix: undefined,
 };
 
 const options = {
@@ -76,6 +78,11 @@ for (let i = 0; i < args.length; i++) {
         case "--output":
         case "-o":
             options.outputPath = value!;
+            i++;
+            break;
+        case "--methodPrefix":
+        case "-m":
+            options.flags.methodPrefix = value!;
             i++;
             break;
         case "--global-mode":
