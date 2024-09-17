@@ -118,6 +118,9 @@ const zodUnionToSwiftType = (
 const zodObjectToSwiftType = (schema: AnyZodObject, state: TRPCSwiftModelState, fallbackName: string): SwiftTypeGenerationData => {
     return wrapZodSchemaWithModels(schema, state, fallbackName, (name) => {
         let swiftModel = "";
+        // swiftModel += "    /* ********************** */\n"
+        // swiftModel += "    /* ********************** */\n"
+        // swiftModel += "    /* ********************** */\n"
 
         const description = schema._def.swift?.description;
         if (description) {

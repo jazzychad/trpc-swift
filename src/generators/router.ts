@@ -203,7 +203,7 @@ const trpcProcedureToSwiftMethodAndLocalModels = (name: string, procedure: Gener
 
         swiftMethod += "}\n";
 
-        return swiftLocalModels + "\n" + swiftMethod;
+        return "\n// MARK: - " + name + "\n\n    /* **********************\n     * " + name + "\n     * ********************* */\n\n" + swiftLocalModels + "\n" + swiftMethod;
     } catch (e) {
         if (!state.flags.quiet) {
             console.error(`Error while processing procedure ${name}: ${(e as Error).message}`);
