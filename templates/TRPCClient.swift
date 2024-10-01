@@ -6,7 +6,7 @@
 
 import Foundation
 
-public enum DecodableValue: Decodable {
+public enum DecodableValue: Decodable, Sendable {
     case string(String)
     case int(Int)
     case double(Double)
@@ -30,7 +30,7 @@ public enum DecodableValue: Decodable {
     }
 }
 
-public enum TRPCErrorCode: Int, Codable {
+public enum TRPCErrorCode: Int, Codable, Sendable {
     // tRPC Defined
     case parseError = -32700
     case badRequest = -32600
@@ -124,14 +124,14 @@ struct TRPCResponse<T: Decodable>: Decodable {
     let error: TRPCError? //ErrorContainer?
 }
 
-public typealias TRPCMiddleware = (URLRequest) async throws -> URLRequest
+public typealias TRPCMiddleware = @Sendable (URLRequest) async throws -> URLRequest
 
-class TRPCClient {
+final class TRPCClient: Sendable {
     struct EmptyObject: Codable {}
 
     static let shared = TRPCClient()
 
-    lazy var dateFormatter: DateFormatter = {
+    let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"

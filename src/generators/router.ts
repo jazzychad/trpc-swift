@@ -26,7 +26,7 @@ export const getTRPCStructure = (routerDef: SwiftTRPCRouterDef): TRPCStructure =
 
 export const trpcStructureToSwiftClass = (name: string, structure: TRPCStructure, state: TRPCSwiftRouteState): string => {
     const className = processTypeName(name) + (state.routeDepth ? "Route" : "");
-    let swiftClass = `${state.flags.publicAccess ? "public " : ""}class ${className}: TRPCClientData {\n`;
+    let swiftClass = `${state.flags.publicAccess ? "public " : ""}final class ${className}: TRPCClientData, Sendable {\n`;
 
     let innerSwiftCode = "";
     const childStructureNames: string[] = [];
@@ -60,8 +60,8 @@ export const trpcStructureToSwiftClass = (name: string, structure: TRPCStructure
         if (state.flags.createShared) {
             swiftClass += `${state.flags.publicAccess ? "public " : ""}static let shared = ${className}()\n\n`;
         }
-        swiftClass += `private var baseUrl: URL${state.flags.createShared ? "!" : ""}\n`;
-        swiftClass += "private var baseMiddlewares: [TRPCMiddleware] = []\n\n";
+        swiftClass += `private let baseUrl: URL${state.flags.createShared ? "!" : ""}\n`;
+        swiftClass += "private let baseMiddlewares: [TRPCMiddleware] // = []\n\n";
         swiftClass += "fileprivate var url: URL {\n";
         swiftClass += "baseUrl\n";
         swiftClass += "}\n\n";
