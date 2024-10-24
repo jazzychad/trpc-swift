@@ -141,7 +141,7 @@ const zodObjectToSwiftType = (schema: AnyZodObject, state: TRPCSwiftModelState, 
             return undefined
         }))
         let isIdentifiable = f !== undefined
-        swiftModel += `struct ${name}: Codable, Hashable,${isIdentifiable ? ' Identifiable,' : ''} ${state.flags.conformance} {\n`;
+        swiftModel += `struct ${name}: Codable, Hashable, Sendable,${isIdentifiable ? ' Identifiable,' : ''} ${state.flags.conformance} {\n`;
         Object.entries(schema.shape).forEach(([key, value]) => {
             const childType = zodSchemaToSwiftType(
                 value as ZodType,
