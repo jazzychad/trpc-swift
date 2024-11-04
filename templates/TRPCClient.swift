@@ -5,6 +5,7 @@
 //
 
 import Foundation
+// import {{extra-imports}}
 
 public enum DecodableValue: Decodable, Sendable {
     case string(String)

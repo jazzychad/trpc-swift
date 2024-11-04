@@ -62,10 +62,10 @@ export const trpcStructureToSwiftClass = (name: string, structure: TRPCStructure
         }
         swiftClass += `private let baseUrl: URL${state.flags.createShared ? "!" : ""}\n`;
         swiftClass += "private let baseMiddlewares: [TRPCMiddleware] // = []\n\n";
-        swiftClass += "fileprivate var url: URL {\n";
+        swiftClass += "internal var url: URL {\n";
         swiftClass += "baseUrl\n";
         swiftClass += "}\n\n";
-        swiftClass += "fileprivate var middlewares: [TRPCMiddleware] {\n";
+        swiftClass += "internal var middlewares: [TRPCMiddleware] {\n";
         swiftClass += "baseMiddlewares\n";
         swiftClass += "}\n\n";
         swiftClass += `${state.flags.publicAccess ? "public " : ""}init(baseUrl: URL${

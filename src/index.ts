@@ -36,7 +36,19 @@ export const trpcRouterToSwiftClient = (name: string, routerDef: SwiftTRPCRouter
         });
     }
 
-    return indentSwiftCode(swiftClient);
+    if (flags.noClient) {
+        let code = '\nimport Foundation\n'
+        for (const i of flags.extraImports) {
+            code += 'import ' + i + '\n'
+        }
+        code += '\n'
+        code += swiftClass
+        return indentSwiftCode(code)
+    }
+
+    let code = swiftClient
+    code = code.replace('// import {{extra-imports}}', flags.extraImports.map(i => 'import ' + i).join('\n'))
+    return indentSwiftCode(code);
 };
 
 export const trpcRouterToSwiftFile = (name: string, routerDef: SwiftTRPCRouterDef, flags: TRPCSwiftFlags, outFile: string) => {

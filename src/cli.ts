@@ -25,6 +25,8 @@ const showHelp = () => {
     console.log("  -a, --alias        Create public type aliases for all models in the global scope.");
     console.log("  -s, --shared       Create a shared singleton instance of the generated Swift client.");
     console.log("  -m, --methodPrefix Set a method prefix for the generated trpc method names.");
+    console.log("      --noClient     Don't generate the TRPCClient boilerplate code");
+    console.log("      --import       Name of module to import");
     console.log("  -h, --help         Display this help message");
     console.log("  -q, --quiet        Run in quiet mode (no output except for fatal errors)");
 };
@@ -42,6 +44,8 @@ const flags: TRPCSwiftFlags = {
     conformance: "Equatable",
     quiet: false,
     methodPrefix: undefined,
+    noClient: false,
+    extraImports: []
 };
 
 const options = {
@@ -84,6 +88,13 @@ for (let i = 0; i < args.length; i++) {
         case "-m":
             options.flags.methodPrefix = value!;
             i++;
+            break;
+        case "--import":
+                options.flags.extraImports.push(value!);
+                i++;
+                break;
+        case "--noClient":
+            options.flags.noClient = true;
             break;
         case "--global-mode":
         case "-g":
