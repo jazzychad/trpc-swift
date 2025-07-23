@@ -1,6 +1,7 @@
 import {
     AnyZodObject,
     ZodArray,
+    ZodDefault,
     ZodEffects,
     ZodEnum,
     ZodFirstPartyTypeKind,
@@ -56,6 +57,8 @@ export const zodSchemaToSwiftType = (schema: ZodType, state: TRPCSwiftModelState
                 return { swiftTypeSignature: "String" };
             case ZodFirstPartyTypeKind.ZodLiteral:
                 return zodEnumToSwiftType(z.enum((schema as ZodLiteral<never>)._def.value), state, fallbackName);
+            case ZodFirstPartyTypeKind.ZodDefault:
+                return zodDefaultToSwiftType((schema as ZodDefault<never>), state, fallbackName)
             default:
                 break;
         }
@@ -229,6 +232,30 @@ const zodEnumToSwiftType = (
 
 const zodOptionalOrNullableToSwiftType = (
     schema: ZodOptional<never> | ZodNullable<never>,
+    state: TRPCSwiftModelState,
+    fallbackName: string
+): SwiftTypeGenerationData | null => {
+    const unwrappedResult = zodSchemaToSwiftType(
+        schema._def.innerType,
+        {
+            ...state,
+            modelDepth: state.modelDepth + 1,
+            isAlreadyOptional: true,
+        },
+        fallbackName
+    );
+    if (!unwrappedResult) {
+        return null;
+    }
+
+    return {
+        swiftTypeSignature: `${unwrappedResult.swiftTypeSignature}${state.isAlreadyOptional ? "" : "?"}`,
+        swiftLocalModel: unwrappedResult.swiftLocalModel,
+    };
+};
+
+const zodDefaultToSwiftType = (
+    schema: ZodDefault<never>,
     state: TRPCSwiftModelState,
     fallbackName: string
 ): SwiftTypeGenerationData | null => {
